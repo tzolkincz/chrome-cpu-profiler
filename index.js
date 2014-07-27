@@ -4,12 +4,51 @@ var profiler = require('cpu-profiler')
   , timings = {}
 
 function profile(item) {
+  var samples = generateSamples(item);
   var data = clone(item.topRoot)
   followChild(item.topRoot, data)
+
+  if (!item.startTime || !item.endTime) {
+    // Fallback to imitate start and end times
+    var now = Date.now()
+    item.startTime = now
+    item.endTime = now + item.topRoot.totalTime
+  }
+
+  function gatherSamples(item) {
+    var itemId = 0
+    var samples = []
+
+    function gatherSamplesInternal(item) {
+      if (!item.id) {
+        itemId++
+        item.id = itemId
+      }
+
+      if (item.selfSamplesCount) {
+        for (var i=0; i < item.selfSamplesCount; i++) {
+          samples.push(itemId)
+        }
+      }
+
+      if (item.childrenCount) {
+        item.children.forEach(gatherSamplesInternal)
+      }
+    }
+
+    gatherSamplesInternal(item)
+    return samples
+  }
+
+  if (!samples || !samples.length) {
+    // Fallback to restore samples array indirectly
+    samples = gatherSamples(data)
+  }
+
   return { head: data
     , startTime: formatV8Time(item.startTime)
     , endTime: formatV8Time(item.endTime)
-    , samples: generateSamples(item)
+    , samples: samples
   }
 }
 
