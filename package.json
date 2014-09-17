@@ -12,7 +12,7 @@
   "author": "Tom Gallacher <tomgallacher23@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "strong-cpu-profiler": "git+ssh://git@github.com:tomgco/strong-cpu-profiler.git#release/2.0.0",
+    "strong-cpu-profiler": "git+http://git@github.com/tomgco/strong-cpu-profiler.git#release/2.0.0",
     "lodash.clone": "~2.4.1"
   },
   "devDependencies": {
